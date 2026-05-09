@@ -4,6 +4,7 @@
 > *From Casual Games to Competitive Cloud Gaming*
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-blue.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![Prior Art](https://img.shields.io/badge/Prior%20Art-9%20Mei%202026-green.svg)]()
 [![Status](https://img.shields.io/badge/Status-Proof%20of%20Concept-orange.svg)]()
 [![Author](https://img.shields.io/badge/Author-Ramawan-informational.svg)](mailto:ramawan@live.com)
 
@@ -11,10 +12,17 @@
 
 ## 🎮 Coba Demo Langsung
 
-**[▶ Mainkan CCL Runner — Proof of Concept (Original)](document/CCL_Runner_Game.html)**
+▶ **[Mainkan CCL Runner — Proof of Concept (Original)](./document/CCL_Runner_Game.html)**
 
 > Buka file `document/CCL_Runner_Game.html` di browser Anda.
 > **Info:** Versi lanjutan (Interceptor & Missile) tersedia di root folder.
+
+---
+
+## 📄 Whitepaper
+
+Dokumentasi lengkap mengenai teori, arsitektur, dan analisis mendalam protokol CCL dapat diakses melalui file berikut:
+📥 **[Unduh Whitepaper (DOCX)](./CCL_Whitepaper_Final_Ramawan.docx)**
 
 ---
 
@@ -136,8 +144,8 @@ Game demo `CCL_Runner_Game.html` mendemonstrasikan mekanisme inti CCL:
 
 ```
 ├── README.md                          ← Dokumentasi Utama (Protokol CCL)
-├── LICENSE.md                         ← Lisensi Creative Commons 4.0
-├── CCL_Whitepaper_Final_Ramawan.docx  ← Whitepaper Lengkap
+├── LICENSE.md                         ← Lisensi Creative Commons
+├── CCL_Whitepaper_Final_Ramawan.docx  ← Whitepaper (DOCX)
 ├── CCL_Runner_Game.html               ← PoC Lanjutan (Interceptor & Missile)
 └── document/
     └── CCL_Runner_Game.html           ← PoC Original (Sesuai Whitepaper)
