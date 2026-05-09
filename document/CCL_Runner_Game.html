@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCL Runner — Cognitive Command Layer Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100vh;padding:16px;color:#fff}
+h1{font-size:18px;font-weight:500;color:#90CAF9;margin-bottom:4px;letter-spacing:1px}
+.sub{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:12px}
+#wrap{width:100%;max-width:700px}
+#hud{display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(255,255,255,0.07);border-radius:8px 8px 0 0;font-size:12px;flex-wrap:wrap}
+.badge{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:500;background:#1565C0;color:#90CAF9}
+#hud-right{margin-left:auto;display:flex;gap:12px;align-items:center}
+#timer-d{font-weight:500;color:#FFB74D}
+#score-d{font-weight:500;color:#fff}
+#streak-d{font-size:11px;color:rgba(255,255,255,0.5)}
+canvas{display:block;width:100%;height:200px;border-left:1px solid rgba(255,255,255,0.1);border-right:1px solid rgba(255,255,255,0.1)}
+#panel{padding:10px 14px;background:rgba(255,255,255,0.05);border-radius:0 0 8px 8px;border:1px solid rgba(255,255,255,0.1);border-top:none}
+#pool-row{display:flex;gap:8px;margin-bottom:8px}
+.pool-card{flex:1;padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05)}
+.pool-card.jc{border-color:#1565C0;background:rgba(21,101,192,0.15)}
+.pool-card.hc{border-color:#2E7D32;background:rgba(46,125,50,0.15)}
+.pt{font-size:10px;font-weight:500;color:rgba(255,255,255,0.5);margin-bottom:2px}
+.pt.j{color:#90CAF9}.pt.h{color:#A5D6A7}
+.pv{font-size:20px;font-weight:500}
+.pv.j{color:#42A5F5}.pv.h{color:#66BB6A}
+.pb{height:5px;border-radius:3px;background:rgba(255,255,255,0.1);margin-top:4px}
+.pf{height:5px;border-radius:3px;transition:width .3s}
+.pfj{background:#1976D2}.pfh{background:#388E3C}
+#qa{background:rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px}
+#qmeta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+#qbadge{padding:2px 9px;border-radius:20px;font-size:10px;font-weight:500}
+.bj{background:rgba(21,101,192,0.4);color:#90CAF9}.bh{background:rgba(46,125,50,0.4);color:#A5D6A7}
+#qdiff{font-size:10px;color:rgba(255,255,255,0.4)}
+#tbw{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.1)}
+#tb{height:4px;border-radius:2px;background:#42A5F5;transition:width .1s linear}
+#qtxt{font-size:13px;font-weight:500;color:#fff;margin-bottom:7px}
+#obts{display:flex;gap:6px;margin-bottom:7px}
+.obt{flex:1;padding:7px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);cursor:pointer;font-size:12px;color:#fff;font-weight:500;transition:background .15s}
+.obt:hover{background:rgba(255,255,255,0.12)}
+.selj{border-color:#1976D2;background:rgba(21,101,192,0.3);color:#90CAF9}
+.selh{border-color:#388E3C;background:rgba(46,125,50,0.3);color:#A5D6A7}
+#ar{display:flex;gap:6px}
+#ainp{flex:1;padding:6px 12px;border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-size:13px;color:#fff;background:rgba(255,255,255,0.08);outline:none}
+#ainp:focus{border-color:#42A5F5}
+#sbtn{padding:6px 16px;border-radius:6px;border:1px solid #1976D2;background:#1565C0;color:#90CAF9;cursor:pointer;font-size:12px;font-weight:500}
+#sbtn:hover{background:#1976D2}
+#fb{font-size:11px;margin-top:5px;min-height:14px;font-weight:500}
+.ok{color:#66BB6A}.ng{color:#EF5350}.to{color:#FFA726}
+#sl{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;min-height:13px}
+#ov{position:absolute;inset:0;background:rgba(10,10,30,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border-radius:4px}
+#ov h2{color:#90CAF9;font-size:18px;font-weight:500}
+#ov p{color:rgba(255,255,255,0.75);font-size:12px;text-align:center;max-width:320px;line-height:1.7}
+#ov button{padding:8px 28px;border-radius:20px;border:none;background:#1565C0;color:#fff;font-weight:500;cursor:pointer;font-size:13px}
+#ov button:hover{background:#1976D2}
+#rc{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 24px;text-align:center}
+#rc .big{color:#FFD700;font-size:30px;font-weight:500}
+#rc .sub2{color:rgba(255,255,255,0.55);font-size:11px;margin-top:3px}
+#cw{position:relative}
+.ccl-link{display:block;text-align:center;margin-top:10px;font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.5px}
+</style>
+</head>
+<body>
+<h1>CCL RUNNER</h1>
+<p class="sub">Cognitive Command Layer — Proof of Concept Demo</p>
+<div id="wrap">
+  <div id="hud">
+    <span class="badge">CCL MODE</span>
+    <span style="font-size:11px;color:rgba(255,255,255,0.45)">Jawab terus — bot lompat &amp; sembuh otomatis</span>
+    <div id="hud-right">
+      <span id="timer-d">00:00</span>
+      <span id="score-d">Skor: 0</span>
+      <span id="streak-d">Streak: 0</span>
+    </div>
+  </div>
+  <div id="cw">
+    <canvas id="cv"></canvas>
+    <div id="ov">
+      <h2>CCL Runner</h2>
+      <p>Pilih <b style="color:#90CAF9">Lompat</b> atau <b style="color:#A5D6A7">Heal</b> — jawab pertanyaan untuk mengisi poin.<br>Mobil lompat <b>otomatis</b> saat rintangan mendekat jika punya poin.<br>Pertanyaan makin susah seiring waktu. Bertahan selama mungkin!</p>
+      <button onclick="startGame()">Mulai</button>
+    </div>
+  </div>
+  <div id="panel">
+    <div id="pool-row">
+      <div class="pool-card jc">
+        <div class="pt j">Poin Lompat (auto)</div>
+        <div class="pv j" id="jv">0</div>
+        <div class="pb"><div class="pf pfj" id="jb" style="width:0%"></div></div>
+      </div>
+      <div class="pool-card hc">
+        <div class="pt h">HP Mobil</div>
+        <div class="pv h" id="hv">5 / 5</div>
+        <div class="pb"><div class="pf pfh" id="hb" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div id="qa">
+      <div id="qmeta">
+        <span id="qbadge" class="bj">Lompat</span>
+        <span id="qdiff"></span>
+        <div id="tbw"><div id="tb"></div></div>
+      </div>
+      <div id="qtxt">Pilih opsi di bawah untuk mulai menjawab...</div>
+      <div id="obts">
+        <button class="obt selj" id="btnj" onclick="pickOpt('jump')">Lompat +poin</button>
+        <button class="obt" id="btnh" onclick="pickOpt('heal')">Heal +poin</button>
+      </div>
+      <div id="ar">
+        <input id="ainp" type="text" placeholder="Ketik jawaban lalu tekan Enter..." autocomplete="off" onkeydown="if(event.key==='Enter')submit()">
+        <button id="sbtn" onclick="submit()">Kirim</button>
+      </div>
+      <div id="fb"></div>
+    </div>
+    <div id="sl">Tekan Mulai untuk bermain.</div>
+  </div>
+</div>
+<p class="ccl-link">CCL — Cognitive Command Layer · Proof of Concept v1.0</p>
+
+<script>
+const cv=document.getElementById('cv');
+const cx=cv.getContext('2d');
+const W=700,H=200;
+cv.width=W;cv.height=H;
+const GND=H-38,CARX=100;
+let car,obs,pts,parts,running,animId,frame;
+let jp=0,hp=5,maxHp=5,score=0,streak=0,elapsed=0,diff=1;
+let curOpt='jump',curQ=null,tVal=0,tIv=null,gIv=null;
+let bgOff=0,flashMsg='',flashTimer=0,flashCol='#fff';
+const TMAX=10,PMAX=15;
+const QS=[
+  {q:"6 × 7 = ?",a:"42",d:1},{q:"Ibukota Jepang?",a:"tokyo",d:1},{q:"2⁴ = ?",a:"16",d:1},
+  {q:"√81 = ?",a:"9",d:1},{q:"15 + 28 = ?",a:"43",d:1},{q:"9 × 8 = ?",a:"72",d:1},
+  {q:"100 ÷ 4 = ?",a:"25",d:1},{q:"Segitiga punya berapa sisi?",a:"3",d:1},
+  {q:"2⁵ = ?",a:"32",d:2},{q:"√144 = ?",a:"12",d:2},{q:"12 × 13 = ?",a:"156",d:2},
+  {q:"HTTP port default?",a:"80",d:2},{q:"RAM singkatan?",a:"random access memory",d:2},
+  {q:"Linux dibuat oleh?",a:"linus",d:2},{q:"Sudut dalam segitiga = ?°",a:"180",d:2},
+  {q:"IP v4 berapa oktet?",a:"4",d:2},{q:"2¹⁰ = ?",a:"1024",d:3},
+  {q:"CPU singkatan?",a:"central processing unit",d:3},{q:"DNS singkatan?",a:"domain name system",d:3},
+  {q:"Boolean: NOT(True AND False)?",a:"true",d:3},{q:"100 mod 7 = ?",a:"2",d:3},
+  {q:"HTTP singkatan?",a:"hypertext transfer protocol",d:3},{q:"15² = ?",a:"225",d:3},
+  {q:"OSI model berapa layer?",a:"7",d:3},{q:"Pencipta Python?",a:"guido",d:2},
+  {q:"2⁸ = ?",a:"256",d:3},{q:"7! (faktorial 7) = ?",a:"5040",d:3},
+  {q:"Ibukota Australia?",a:"canberra",d:2},{q:"Berapa 17 × 13?",a:"221",d:3},
+  {q:"for loop adalah struktur?",a:"iterasi",d:1},
+];
+function pickQ(){const p=QS.filter(q=>q.d<=diff);return p[Math.floor(Math.random()*p.length)];}
+function fmtT(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function initGame(){
+  car={x:CARX,y:GND-26,vy:0,jumping:false,ang:0,shake:0};
+  obs=[];pts=[];parts=[];jp=0;hp=5;score=0;streak=0;elapsed=0;diff=1;bgOff=0;
+  flashMsg='';flashTimer=0;frame=0;curOpt='jump';
+  clearInterval(gIv);clearInterval(tIv);
+  gIv=setInterval(()=>{elapsed++;diff=elapsed<30?1:elapsed<90?2:3;
+    document.getElementById('timer-d').textContent=fmtT(elapsed);
+    score=elapsed*10+streak*5;document.getElementById('score-d').textContent='Skor: '+score;
+  },1000);
+  updPools();newQ();
+  document.getElementById('streak-d').textContent='Streak: 0';
+  document.getElementById('sl').textContent='Jawab terus — bot jalan otomatis!';
+}
+function startGame(){document.getElementById('ov').style.display='none';running=true;initGame();loop();}
+function restartGame(){cancelAnimationFrame(animId);clearInterval(tIv);clearInterval(gIv);
+  document.getElementById('ov').style.display='none';running=true;initGame();loop();}
+function pickOpt(t){curOpt=t;
+  document.getElementById('btnj').className='obt'+(t==='jump'?' selj':'');
+  document.getElementById('btnh').className='obt'+(t==='heal'?' selh':'');
+  document.getElementById('qbadge').textContent=t==='jump'?'Lompat':'Heal';
+  document.getElementById('qbadge').className=t==='jump'?'bj':'bh';
+  newQ();document.getElementById('ainp').focus();}
+function newQ(){curQ=pickQ();
+  document.getElementById('qtxt').textContent=curQ.q;
+  document.getElementById('qdiff').textContent=(curQ.d===1?'Mudah':curQ.d===2?'Sedang':'Sulit')+' +'+curQ.d;
+  document.getElementById('ainp').value='';document.getElementById('fb').textContent='';
+  tVal=TMAX;updTb(tVal);clearInterval(tIv);
+  tIv=setInterval(()=>{tVal-=0.1;updTb(tVal);if(tVal<=0){clearInterval(tIv);onTO();}},100);}
+function updTb(v){const p=Math.max(0,v/TMAX*100);const b=document.getElementById('tb');
+  b.style.width=p+'%';b.style.background=p>55?'#42A5F5':p>22?'#FFA726':'#EF5350';}
+function submit(){if(!running||!curQ)return;clearInterval(tIv);
+  const ans=document.getElementById('ainp').value.trim().toLowerCase();
+  const ok=ans===curQ.a||(ans.length>2&&(ans.includes(curQ.a)||curQ.a.includes(ans)));
+  if(ok)onOk();else onNg();}
+function onOk(){const b=curQ.d;streak++;document.getElementById('streak-d').textContent='Streak: '+streak;
+  if(curOpt==='jump'){jp=Math.min(PMAX,jp+b);setF('+'+b+' lompat!','#42A5F5');
+    document.getElementById('fb').textContent='Benar! +'+b+' poin lompat (total: '+jp+')';
+    document.getElementById('fb').className='ok';}
+  else{const heal=Math.min(maxHp-hp,b);hp=Math.min(maxHp,hp+heal);
+    setF('+'+(heal||b)+' HP!','#66BB6A');
+    document.getElementById('fb').textContent='Benar! HP: '+hp+'/'+maxHp;
+    document.getElementById('fb').className='ok';}
+  updPools();setTimeout(newQ,900);}
+function onNg(){streak=0;document.getElementById('streak-d').textContent='Streak: 0';
+  document.getElementById('fb').textContent='Salah! Jawaban: "'+curQ.a+'"';
+  document.getElementById('fb').className='ng';setF('Salah!','#EF5350');setTimeout(newQ,1100);}
+function onTO(){document.getElementById('fb').textContent='Waktu habis! Jawaban: "'+curQ.a+'"';
+  document.getElementById('fb').className='to';setF('Timeout!','#FFA726');newQ();}
+function setF(m,c){flashMsg=m;flashCol=c;flashTimer=40;}
+function updPools(){document.getElementById('jv').textContent=jp;
+  document.getElementById('hv').textContent=hp+' / '+maxHp;
+  document.getElementById('jb').style.width=Math.round(jp/PMAX*100)+'%';
+  document.getElementById('hb').style.width=Math.round(hp/maxHp*100)+'%';}
+function spawnObs(){const types=['low','high','pit'],w=[3,2,2];
+  let r=Math.random()*7,type='low';
+  for(let i=0;i<types.length;i++){r-=w[i];if(r<=0){type=types[i];break;}}
+  const o={type,passed:false};
+  if(type==='low'){o.x=W+10;o.w=20;o.h=32;o.y=GND-32;}
+  else if(type==='high'){o.x=W+10;o.w=20;o.h=58;o.y=GND-58;}
+  else{o.x=W+10;o.w=55;o.h=8;o.y=GND+2;o.isPit=true;}
+  obs.push(o);}
+function spawnPt(x,y,t,c){pts.push({x,y,t,c,life:1,vy:-1.5});}
+function spawnParts(x,y,c,n){for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.random()-.5)*5,vy:-(Math.random()*3+1),life:1,col:c});}
+function drawBg(){cx.fillStyle='#1a1a3e';cx.fillRect(0,0,W,GND);
+  cx.fillStyle='#2d5a27';cx.fillRect(0,GND,W,H-GND);
+  cx.fillStyle='#1a3d16';cx.fillRect(0,GND,W,4);
+  cx.fillStyle='rgba(255,255,255,0.07)';
+  [[70,25,16],[210,18,12],[390,30,20],[560,22,14]].forEach(([x,y,r])=>{
+    const sx=((x-bgOff*.12)%W+W)%W;
+    cx.beginPath();cx.arc(sx,y,r,0,Math.PI*2);cx.arc(sx+r*.8,y-r*.3,r*.65,0,Math.PI*2);cx.fill();});
+  for(let i=0;i<12;i++){const lx=((i*60-bgOff)%W+W)%W;
+    cx.fillStyle='rgba(255,255,255,0.12)';cx.fillRect(lx,GND-1,28,2);}
+  cx.fillStyle='rgba(255,220,100,0.6)';
+  for(let i=0;i<5;i++){const sx=((i*140-bgOff*.04)%(W+100)+W+100)%W;
+    if(sx<W){cx.beginPath();cx.arc(sx,15,2,0,Math.PI*2);cx.fill();}}}
+function drawObs(o){if(o.isPit){cx.fillStyle='#0d0d0d';cx.fillRect(o.x,o.y,o.w,16);}
+  else{cx.fillStyle=o.type==='high'?'#B71C1C':'#D32F2F';cx.fillRect(o.x,o.y,o.w,o.h);
+    cx.fillStyle='rgba(255,255,255,0.08)';cx.fillRect(o.x,o.y,o.w,5);}
+  const d=o.x-CARX;
+  if(d>0&&d<170){const a=Math.min(.8,(170-d)/120);
+    cx.fillStyle=`rgba(255,100,0,${a*.15})`;cx.fillRect(o.x-2,0,o.w+4,H);
+    if(d<100){cx.fillStyle=`rgba(255,220,0,${a})`;cx.font='bold 9px Arial';cx.textAlign='center';cx.fillText('!',o.x+o.w/2,20);}}}
+function drawCar(){cx.save();cx.translate(car.x,car.y);
+  if(car.shake>0){cx.translate((Math.random()-.5)*3,(Math.random()-.5)*2);car.shake--;}
+  cx.rotate(car.ang*Math.PI/180);
+  const w=50,h=26;
+  cx.fillStyle='#1565C0';cx.beginPath();cx.roundRect(-w/2,-h,w,h,4);cx.fill();
+  cx.fillStyle='#1976D2';cx.beginPath();cx.roundRect(-w/2+5,-h-13,w-10,15,3);cx.fill();
+  cx.fillStyle='rgba(144,202,249,0.7)';cx.fillRect(-w/2+8,-h-11,13,11);cx.fillRect(4,-h-11,13,11);
+  cx.fillStyle='#111';cx.beginPath();cx.arc(-w/2+9,1,6,0,Math.PI*2);cx.fill();
+  cx.beginPath();cx.arc(w/2-9,1,6,0,Math.PI*2);cx.fill();
+  cx.fillStyle='#444';cx.beginPath();cx.arc(-w/2+9,1,3,0,Math.PI*2);cx.fill();
+  cx.beginPath();cx.arc(w/2-9,1,3,0,Math.PI*2);cx.fill();
+  cx.fillStyle='#FFD700';cx.beginPath();cx.arc(w/2+1,-h+8,3,0,Math.PI*2);cx.fill();
+  cx.fillStyle='rgba(20,80,200,.9)';cx.beginPath();cx.roundRect(-14,-h-26,28,11,3);cx.fill();
+  cx.fillStyle='#fff';cx.font='bold 7px Arial';cx.textAlign='center';cx.fillText('CCL',0,-h-18);
+  if(jp>0){cx.fillStyle='rgba(21,101,192,.85)';cx.beginPath();cx.roundRect(-16,-h-40,32,12,3);cx.fill();
+    cx.fillStyle='#90CAF9';cx.font='bold 7px Arial';cx.textAlign='center';cx.fillText('J:'+jp,0,-h-31);}
+  const hpPct=hp/maxHp;cx.fillStyle='rgba(0,0,0,.4)';cx.fillRect(-w/2,-h-10,w,5);
+  cx.fillStyle=hpPct>.6?'#4CAF50':hpPct>.3?'#FF9800':'#F44336';cx.fillRect(-w/2,-h-10,w*hpPct,5);
+  cx.restore();}
+function drawPts(){pts.forEach(p=>{cx.fillStyle=p.c;cx.font='bold 11px Arial';cx.textAlign='center';
+  cx.globalAlpha=p.life;cx.fillText(p.t,p.x,p.y);p.y+=p.vy;p.life-=.03;});cx.globalAlpha=1;pts=pts.filter(p=>p.life>0);}
+function drawParts(){parts.forEach(p=>{cx.globalAlpha=p.life;cx.fillStyle=p.col;
+  cx.beginPath();cx.arc(p.x,p.y,3*p.life,0,Math.PI*2);cx.fill();
+  p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.life-=.035;});cx.globalAlpha=1;parts=parts.filter(p=>p.life>0);}
+function drawFlash(){if(flashTimer<=0)return;cx.globalAlpha=flashTimer/40*.85;
+  cx.fillStyle=flashCol;cx.font='bold 14px Arial';cx.textAlign='center';
+  cx.fillText(flashMsg,CARX,GND-60);cx.globalAlpha=1;flashTimer--;}
+function loop(){if(!running)return;cx.clearRect(0,0,W,H);frame++;
+  const spd=2.8+Math.floor(elapsed/20)*.3;bgOff+=spd;drawBg();
+  if(frame%Math.max(80,180-elapsed*1.2|0)===0)spawnObs();
+  obs.forEach(o=>o.x-=spd);
+  for(let i=obs.length-1;i>=0;i--){const o=obs[i];
+    if(o.x+o.w<0){obs.splice(i,1);continue;}
+    if(!o.passed&&o.x+o.w<car.x-24){o.passed=true;spawnPt(car.x-10,car.y-40,'+10','#4CAF50');spawnParts(car.x,car.y-10,'#4CAF50',6);}
+    const hit=car.x+22>o.x+2&&car.x-22<o.x+o.w-2&&car.y-26<o.y+o.h&&car.y>o.y;
+    if(hit&&!o.passed){
+      if(!o.isPit&&car.jumping){o.passed=true;spawnParts(o.x+o.w/2,o.y,'#FFD700',10);spawnPt(o.x+o.w/2,o.y-10,'JUMP!','#90CAF9');continue;}
+      if(o.isPit&&car.jumping)continue;
+      o.passed=true;hp--;car.shake=10;spawnParts(car.x,car.y-10,'#F44336',14);
+      spawnPt(car.x,car.y-40,'-1 HP','#EF5350');updPools();
+      if(hp<=0){endGame();return;}}
+    drawObs(o);}
+  car.vy+=.52;car.y+=car.vy;
+  if(car.y>=GND-26){car.y=GND-26;car.vy=0;car.jumping=false;car.ang=0;}
+  if(car.y<10){car.y=10;car.vy=0;}if(car.jumping)car.ang=-10;
+  const ahead=obs.find(o=>!o.passed&&o.x-car.x>-10&&o.x-car.x<150);
+  if(ahead&&jp>0&&!car.jumping){const d=ahead.x-car.x;
+    if(!ahead.isPit?d<80:d<90){car.vy=-10.5;car.jumping=true;jp=Math.max(0,jp-1);
+      updPools();spawnPt(car.x,car.y-30,'JUMP!','#90CAF9');}}
+  drawParts();drawCar();drawPts();drawFlash();
+  cx.fillStyle='rgba(0,0,0,.35)';cx.fillRect(W-96,6,90,14);
+  cx.fillStyle=diff===1?'#66BB6A':diff===2?'#FFA726':'#EF5350';
+  cx.fillRect(W-94,8,Math.round(86*(diff/3)),10);
+  cx.fillStyle='#fff';cx.font='8px Arial';cx.textAlign='left';
+  cx.fillText('Level: '+(diff===1?'Mudah':diff===2?'Sedang':'Sulit'),W-92,16);
+  animId=requestAnimationFrame(loop);}
+function endGame(){running=false;clearInterval(tIv);clearInterval(gIv);
+  const ov=document.getElementById('ov');ov.style.display='flex';
+  const grade=elapsed>=120?'S — Master':elapsed>=60?'A — Ahli':elapsed>=30?'B — Menengah':'C — Pemula';
+  ov.innerHTML=`<h2>Game Over!</h2>
+    <div id="rc"><div class="big">${fmtT(elapsed)}</div><div class="sub2">Waktu bertahan</div>
+    <div style="color:#FFD700;font-size:16px;font-weight:500;margin-top:8px">${grade}</div>
+    <div style="color:rgba(255,255,255,.55);font-size:11px;margin-top:5px">Skor: ${score} &nbsp;|&nbsp; Streak: ${streak} &nbsp;|&nbsp; Level: ${diff===1?'Mudah':diff===2?'Sedang':'Sulit'}</div></div>
+    <p style="font-size:11px;color:rgba(255,255,255,.5)">Screenshot hasil ini sebagai bukti kecerdasan Anda!</p>
+    <button onclick="restartGame()">Main Lagi</button>`;}
+</script>
+</body>
+</html>
