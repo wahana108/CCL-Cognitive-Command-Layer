@@ -1,12 +1,22 @@
 # CCL — Cognitive Command Layer
 
-> **An Educational Control Protocol for Gaming**
+> **A Universal Control Protocol for Human-AI Gaming Interaction**
 > *From Casual Games to Competitive Cloud Gaming*
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-blue.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![Prior Art](https://img.shields.io/badge/Prior%20Art-9%20Mei%202026-green.svg)]()
 [![Status](https://img.shields.io/badge/Status-Proof%20of%20Concept-orange.svg)]()
 [![Author](https://img.shields.io/badge/Author-Ramawan-informational.svg)](mailto:ramawan@live.com)
+
+---
+
+## 📜 Protocol Specification (Prior Art)
+
+Dokumen teknis ini berisi deklarasi hukum *Prior Art* dan arsitektur mendalam mengenai:
+- **CCL Authority Token System** & **Cognitive Verification Mechanism**.
+- **Distributed Cloud Gaming Infrastructure**.
+
+👉 **[Baca Spesifikasi Lengkap di CCL-Protocol-README.md](./CCL-Protocol-README.md)**
 
 ---
 
@@ -30,7 +40,7 @@ Dokumentasi lengkap mengenai teori, arsitektur, dan analisis mendalam protokol C
 
 **CCL (Cognitive Command Layer)** adalah protokol kendali universal yang mengubah cara game dimainkan — menggantikan refleks motorik real-time dengan **kecerdasan terverifikasi**.
 
-Alih-alih mengendalikan karakter secara langsung, pemain berperan sebagai **Komandan** yang memberikan perintah kepada AI/algoritma pengendali melalui mekanisme **tanya-jawab berbasis pengetahuan domain** (Knowledge Gate).
+Dalam ekosistem CCL, pemain berperan sebagai **Human Commander**. Anda memberikan instruksi strategis yang dieksekusi secara otonom oleh **Avatar AI** setelah melalui proses validasi kognitif.
 
 ```
 Pemain memilih opsi perintah
@@ -133,10 +143,10 @@ Game demo `CCL_Runner_Game.html` mendemonstrasikan mekanisme inti CCL:
 
 | Fase | Target | Status |
 |---|---|---|
-| **Fase 1** — Game Ringan Lokal | CCL di atas game 2D ringan | ✅ Proof of Concept selesai |
-| **Fase 2** — AI Controller Training | Algoritma otonom per genre | 🔶 Pengembangan berikutnya |
-| **Fase 3** — Game Menengah + Cloud | Platform streaming awal | 📋 Perencanaan |
-| **Fase 4** — Platform Universal | Game berat via CCL dari HP manapun | 🔮 Visi jangka panjang |
+| **Fase 1** — Proof of Concept | Browser-based demo & Protocol Spec v1.0 | ✅ Selesai |
+| **Fase 2** — Local Streaming | CCL Server Agent & WebSocket Integration | 🔶 Pengembangan |
+| **Fase 3** — Registry & SDK | SDK untuk Developer Game Layer | 📋 Perencanaan |
+| **Fase 4** — Distributed Cloud | Infrastruktur Warnet sebagai Cloud Server | 🔮 Visi |
 
 ---
 
